@@ -1,19 +1,18 @@
 /* ============================================
    AWA FAYE — PORTFOLIO GÉOMATIQUE
-   ess.js — Version Finale Complète + Corrigée
+   app.js — Version Finale Complète + Corrigée Mobile
    ============================================ */
 
 // ===== DONNÉES PROJETS =====
 const PROJETS = [
     {
         id: 1,
-        
         titre: "Cartographie urbaine de Thiès",
         description: "Enquête terrain sur le trafic routier à Thiès. Collecte et analyse de données d'infrastructures routières.",
         tags: ["QGIS", "KoboToolBox", "Multi Counter"],
         categorie: "sig",
         lien: "#",
-        image: "../image/trc.jpg"  // ← corrige le chemin
+        image: "../image/trc.jpg"
     },
     {
         id: 2,
@@ -44,8 +43,6 @@ const PROJETS = [
     }
 ];
 
-
-// ===== DONNÉES COMPÉTENCES =====
 // ===== DONNÉES COMPÉTENCES =====
 const competences = [
     {
@@ -87,6 +84,7 @@ const competences = [
         ]
     }
 ];
+
 // ===== DONNÉES GALERIE =====
 const galeriePhotos = [
     { src: "../image/galerie/trf1.png", alt: "Projets trafic", caption: "Carte de chaleur du trafic total" },
@@ -101,7 +99,7 @@ const galeriePhotos = [
     { src: "../image/galerie/grp4.png", alt: "Graphique", caption: "Analyse de données" },
     { src: "../image/galerie/grp5.png", alt: "Graphique", caption: "Analyse de données" },
     { src: "../image/galerie/grp6.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba " }
+    { src: "../image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
 ];
 
 // ===== INITIALISATION =====
@@ -177,7 +175,7 @@ function initTheme() {
         const current = body.getAttribute('data-theme');
         const next    = current === 'dark' ? 'light' : 'dark';
 
-        // Grains qui tombent
+        // Grains animés
         const rect    = btn.getBoundingClientRect();
         const originX = rect.left + rect.width  / 2;
         const originY = rect.top  + rect.height / 2;
@@ -229,9 +227,14 @@ function initTheme() {
 }
 
 function updateThemeUI(theme, icon, label) {
-    if (!icon || !label) return;
-    if (theme === 'dark') { icon.textContent = '🌙'; label.textContent = 'Sombre'; }
-    else                  { icon.textContent = '☀️'; label.textContent = 'Clair'; }
+    if (!icon) return;
+    if (theme === 'dark') {
+        icon.textContent = '🌙';
+        if (label) label.textContent = 'Sombre';
+    } else {
+        icon.textContent = '☀️';
+        if (label) label.textContent = 'Clair';
+    }
 }
 
 // ===== MENU HAMBURGER =====
@@ -244,12 +247,16 @@ function initHamburger() {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
+
+    // Fermer au clic sur un lien
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
         });
     });
+
+    // Fermer au clic en dehors
     document.addEventListener('click', (e) => {
         if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
             hamburger.classList.remove('active');
@@ -264,19 +271,6 @@ function initScrollSpy() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${id}`) link.classList.add('active');
-                });
-            }
-        });
-    }, { rootMargin: '-40% 0px -55% 0px' }).observe
-    // Fix : observer chaque section individuellement
-    ;
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -288,6 +282,7 @@ function initScrollSpy() {
             }
         });
     }, { rootMargin: '-40% 0px -55% 0px' });
+
     sections.forEach(s => obs.observe(s));
 
     window.addEventListener('scroll', () => {
@@ -312,24 +307,21 @@ function renderProjets(filtre = 'tous') {
         const carte = document.createElement('div');
         carte.className = 'projet-carte reveal';
         carte.style.animationDelay = `${i * 0.1}s`;
-        
-        // Gestion de l'image avec vérification
+
         let imageHtml = '';
         if (projet.image && projet.image !== '#') {
-            imageHtml = `<img src="${projet.image}" alt="${projet.titre}" class="carte-img-real" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\"carte-img-fallback\"><i class=\"fas fa-image\"></i><span>Image non disponible</span></div>'">`;
+            imageHtml = `<img src="${projet.image}" alt="${projet.titre}" class="carte-img-real" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"carte-img-fallback\\"><i class=\\"fas fa-image\\"></i><span>Image non disponible</span></div>'">`;
         } else {
             imageHtml = `<div class="carte-img-fallback"><i class="fas fa-map"></i><span>${projet.titre}</span></div>`;
         }
-        
+
         carte.innerHTML = `
-            <div class="carte-img">
-                ${imageHtml}
-            </div>
+            <div class="carte-img">${imageHtml}</div>
             <div class="carte-body">
                 <h3 class="carte-titre">${projet.titre}</h3>
                 <p class="carte-desc">${projet.description}</p>
                 <div class="carte-tags-wrapper">
-                    <div class="carte-tags-title">
+                    <div class="carte-tags-title" style="font-size:0.85rem;color:var(--clr-text-muted);margin-bottom:0.5rem;">
                         <i class="fas fa-tools"></i> Outils utilisés
                     </div>
                     <div class="carte-tags">
@@ -348,7 +340,6 @@ function renderProjets(filtre = 'tous') {
         container.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
     });
 
-    // Attacher les événements
     container.querySelectorAll('.btn-voir-projet').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = parseInt(btn.dataset.id);
@@ -357,6 +348,7 @@ function renderProjets(filtre = 'tous') {
         });
     });
 }
+
 // ===== FILTRES PROJETS =====
 function initFiltres() {
     const btns = document.querySelectorAll('.filtre-btn');
@@ -371,7 +363,6 @@ function initFiltres() {
 
 // ===== MODAL DÉTAIL PROJET =====
 function ouvrirProjetModal(projet) {
-    // Créer les styles une seule fois
     if (!document.getElementById('style-projet-modal')) {
         const style = document.createElement('style');
         style.id = 'style-projet-modal';
@@ -395,7 +386,7 @@ function ouvrirProjetModal(projet) {
                 border-bottom:1px solid var(--clr-border); position:sticky; top:0; z-index:1;
             }
             .projet-modal-header h3 {
-                font-family:var(--font-display); font-size:1.6rem; margin:0;
+                font-family:var(--font-display); font-size:1.4rem; margin:0;
                 color:var(--clr-text); display:flex; align-items:center; gap:0.7rem;
             }
             .projet-modal-close {
@@ -405,10 +396,6 @@ function ouvrirProjetModal(projet) {
             }
             .projet-modal-close:hover { transform:rotate(90deg); color:var(--clr-accent); }
             .projet-modal-body { padding:2rem 1.8rem; }
-            .projet-modal-emoji {
-                font-size:5rem; text-align:center; display:block;
-                margin-bottom:1.5rem; animation:float 3s ease-in-out infinite;
-            }
             .projet-modal-desc {
                 color:var(--clr-text-muted); font-size:1.1rem;
                 line-height:1.8; margin-bottom:1.5rem;
@@ -430,7 +417,6 @@ function ouvrirProjetModal(projet) {
                 border:1px solid rgba(39,174,96,0.25); margin-bottom:1.5rem;
                 font-size:1rem; color:var(--clr-success); font-weight:600;
             }
-            .projet-modal-statut i { font-size:1.1rem; }
             .btn-projet-modal-lien {
                 display:inline-flex; align-items:center; gap:0.8rem;
                 padding:1rem 2rem; background:var(--clr-accent); color:white;
@@ -439,14 +425,13 @@ function ouvrirProjetModal(projet) {
                 transition:all 0.3s ease; text-decoration:none; width:100%;
                 justify-content:center;
             }
-            .btn-projet-modal-lien:hover { transform:translateY(-3px); filter:brightness(1.1); box-shadow:0 8px 24px rgba(44,62,80,0.3); }
+            .btn-projet-modal-lien:hover { transform:translateY(-3px); filter:brightness(1.1); }
             .btn-projet-modal-lien.disabled { opacity:0.6; cursor:not-allowed; background:var(--clr-text-muted); }
-            .btn-projet-modal-lien.disabled:hover { transform:none; filter:none; box-shadow:none; }
+            .btn-projet-modal-lien.disabled:hover { transform:none; filter:none; }
         `;
         document.head.appendChild(style);
     }
 
-    // Créer ou réutiliser la modal
     let modal = document.getElementById('projet-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -460,15 +445,15 @@ function ouvrirProjetModal(projet) {
     const btnClass = aLien ? 'btn-projet-modal-lien' : 'btn-projet-modal-lien disabled';
     const btnAttr  = aLien ? `href="${projet.lien}" target="_blank" rel="noopener noreferrer"` : '';
     const btnTag   = aLien ? 'a' : 'button';
+    const emoji    = projet.emoji || '🗺️';
 
     modal.innerHTML = `
         <div class="projet-modal-box">
             <div class="projet-modal-header">
-                <h3>${projet.emoji} ${projet.titre}</h3>
+                <h3>${emoji} ${projet.titre}</h3>
                 <button class="projet-modal-close">&times;</button>
             </div>
             <div class="projet-modal-body">
-                <span class="projet-modal-emoji">${projet.emoji}</span>
                 <p class="projet-modal-desc">${projet.description}</p>
                 <p class="projet-modal-tags-titre"><i class="fas fa-tools"></i> Outils utilisés</p>
                 <div class="projet-modal-tags">
@@ -557,7 +542,7 @@ function initReveal() {
 }
 
 // ===== FORMULAIRE CONTACT =====
-let isResetting = false; // flag pour bloquer la revalidation pendant le reset
+let isResetting = false;
 
 function initContact() {
     const form     = document.getElementById('contact-form');
@@ -570,17 +555,14 @@ function initContact() {
             isResetting = true;
             form.reset();
             clearErrors();
-
-            // Afficher le message "Formulaire réinitialisé"
             if (feedback) {
                 feedback.className = 'form-feedback success';
-                feedback.innerHTML = '<i class="fas fa-undo-alt"></i> Formulaire réinitialisé avec succès !';
+                feedback.innerHTML = '<i class="fas fa-undo-alt"></i> Formulaire réinitialisé !';
                 setTimeout(() => {
                     feedback.className   = 'form-feedback';
                     feedback.textContent = '';
                 }, 3000);
             }
-
             setTimeout(() => { isResetting = false; }, 100);
         });
     }
@@ -601,11 +583,10 @@ function initContact() {
             submitBtn.disabled  = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
         }
-
         setTimeout(() => {
             if (feedback) {
                 feedback.className = 'form-feedback success';
-                feedback.innerHTML = '✅ 💖 Message envoyé avec succès 💖! Merci!.';
+                feedback.innerHTML = '✅ 💖 Message envoyé avec succès 💖 ! Merci !';
             }
             isResetting = true;
             form.reset();
@@ -662,23 +643,49 @@ function clearErrors() {
 function initBackToTop() {
     const btn = document.getElementById('back-to-top');
     if (!btn) return;
-    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), { passive: true });
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// ===== ANIMATIONS HERO =====
+// ===== ANIMATIONS HERO — CORRECTION MOBILE =====
 function initAnimations() {
-    document.querySelectorAll('.stat-card').forEach(card => {
-        card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-5px)');
-        card.addEventListener('mouseleave', () => card.style.transform = '');
-    });
+    // Détecter si on est sur mobile pour simplifier l'animation
+    const isMobile = window.innerWidth <= 768;
 
-    ['.hero-greeting','.hero-name-wrapper','.hero-title-wrapper',
-     '.hero-description','.hero-buttons','.hero-image','.hero-social'].forEach((sel, i) => {
+    const selectors = [
+        '.hero-greeting',
+        '.hero-name-wrapper',
+        '.hero-title-wrapper',
+        '.hero-description',
+        '.hero-buttons',
+        '.hero-image',
+        '.hero-social'
+    ];
+
+    selectors.forEach((sel, i) => {
         const el = document.querySelector(sel);
         if (!el) return;
-        el.style.cssText += `opacity:0;transform:translateY(30px);transition:opacity 0.6s ease ${i*0.1}s,transform 0.6s ease ${i*0.1}s`;
-        requestAnimationFrame(() => setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, 100));
+
+        // Appliquer l'état initial
+        el.style.opacity   = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`;
+
+        // Double rAF : garantit que le navigateur applique l'état initial avant d'animer
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                el.style.opacity   = '1';
+                el.style.transform = 'translateY(0)';
+            });
+        });
+    });
+
+    // Interactions hover sur les stat-cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-5px)'; });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
     });
 }
 
@@ -711,13 +718,13 @@ function initQRCode() {
         .qr-modal-box-close { background:none;border:none;font-size:2rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;transition:all 0.3s ease;padding:0.2rem 0.5rem;border-radius:8px; }
         .qr-modal-box-close:hover { transform:rotate(90deg);color:var(--clr-accent); }
         .qr-modal-box-body { padding:2rem;text-align:center; }
-        .qr-modal-img-wrap { display:inline-flex;align-items:center;justify-content:center;background:white;border-radius:20px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:float 4s ease-in-out infinite; }
+        .qr-modal-img-wrap { display:inline-flex;align-items:center;justify-content:center;background:white;border-radius:20px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 32px rgba(0,0,0,0.12); }
         .qr-modal-img-wrap img { width:240px;height:240px;display:block;border-radius:8px; }
         .qr-modal-text { color:var(--clr-text-muted);font-size:1rem;margin-bottom:1.4rem;line-height:1.5; }
         .qr-modal-url { display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.4rem;background:rgba(44,62,80,0.08);border-radius:30px;font-size:0.9rem;color:var(--clr-accent);font-weight:600;margin-bottom:1.4rem;word-break:break-all;cursor:pointer;border:1px solid var(--clr-border);transition:all 0.3s ease; }
         .qr-modal-url:hover { background:rgba(44,62,80,0.15);transform:translateY(-2px); }
         .qr-dl-btn { display:inline-flex;align-items:center;gap:0.7rem;padding:0.9rem 2rem;background:var(--clr-accent);color:white;border:none;border-radius:40px;cursor:pointer;font-size:1rem;font-weight:600;font-family:var(--font-body);transition:all 0.3s ease; }
-        .qr-dl-btn:hover { transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 8px 24px rgba(44,62,80,0.3); }
+        .qr-dl-btn:hover { transform:translateY(-3px);filter:brightness(1.1); }
         @keyframes qrPulse { 0%{transform:scale(1)}40%{transform:scale(0.92)}100%{transform:scale(1)} }
         .qr-trigger.clicked { animation:qrPulse 0.4s ease; }
     `;
@@ -900,21 +907,39 @@ function initSmoothScroll() {
     });
 }
 
-// ===== CURSEUR PERSONNALISÉ =====
+// ===== CURSEUR PERSONNALISÉ (désactivé sur mobile) =====
 function initCustomCursor() {
+    // Ne pas activer sur écrans tactiles
+    if (window.matchMedia('(hover: none)').matches) return;
+    if (window.innerWidth <= 768) return;
+
     let cursor = document.querySelector('.custom-cursor');
-    if (!cursor) { cursor = document.createElement('div'); cursor.className = 'custom-cursor'; document.body.appendChild(cursor); }
-    document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+    if (!cursor) {
+        cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        document.body.appendChild(cursor);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top  = e.clientY + 'px';
+    });
+
     const sel = 'a,button,.filtre-btn,.social-icon,.projet-carte,.skill-item,.carte-lien,.view-toggle-btn,.share-option,.nav-link';
     document.addEventListener('mouseover', (e) => { if (e.target.closest(sel)) cursor.classList.add('hover'); });
     document.addEventListener('mouseout',  (e) => { if (e.target.closest(sel)) cursor.classList.remove('hover'); });
-    document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
-    document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
 }
 
 // ===== RÉSEAUX SOCIAUX =====
 function initSocialLinks() {
-    const map  = { github:'https://github.com/', linkedin:'https://www.linkedin.com/', instagram:'https://www.instagram.com/', email:'mailto:fawa12748@gmail.com' };
+    const map  = {
+        github:    'https://github.com/fawa12748',
+        linkedin:  'https://www.linkedin.com/in/awa-faye-2a0b123b6/',
+        instagram: 'https://www.instagram.com/awafaye2776/',
+        email:     'mailto:fawa12748@gmail.com'
+    };
     const keys = Object.keys(map);
     document.querySelectorAll('.social-icon').forEach((el, i) => {
         const key = keys[i % keys.length];
@@ -948,53 +973,21 @@ function initHeroGallery() {
         .galerie-image-container { position:relative;width:100%;height:100%;overflow:hidden; }
         .galerie-image-container img { width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease; }
         .galerie-item:hover .galerie-image-container img { transform:scale(1.08); }
-        .galerie-download-btn { 
-            position:absolute; 
-            bottom:10px; 
-            right:10px; 
-            background:#27ae60; 
-            color:white; 
-            border:none; 
-            border-radius:30px; 
-            padding:0.4rem 0.8rem; 
-            font-size:0.7rem; 
-            font-weight:600; 
-            cursor:pointer; 
-            display:flex; 
-            align-items:center; 
-            gap:0.3rem;
-            opacity:0;
-            transition:opacity 0.3s ease;
-            z-index:10;
-        }
+        .galerie-download-btn { position:absolute;bottom:10px;right:10px;background:#27ae60;color:white;border:none;border-radius:30px;padding:0.4rem 0.8rem;font-size:0.7rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:0.3rem;opacity:0;transition:opacity 0.3s ease;z-index:10; }
         .galerie-item:hover .galerie-download-btn { opacity:1; }
-        .galerie-download-btn:hover { background:#2ecc71; transform:scale(1.05); }
-        .galerie-caption { 
-            position:absolute; 
-            bottom:0; 
-            left:0; 
-            right:0; 
-            background:linear-gradient(transparent,rgba(0,0,0,0.7)); 
-            color:white; 
-            padding:1rem 0.8rem 0.6rem; 
-            font-size:0.85rem; 
-            font-weight:600; 
-            opacity:0; 
-            transition:opacity 0.3s ease; 
-            z-index:1; 
-        }
+        .galerie-download-btn:hover { background:#2ecc71; }
+        .galerie-caption { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:white;padding:1rem 0.8rem 0.6rem;font-size:0.85rem;font-weight:600;opacity:0;transition:opacity 0.3s ease;z-index:1; }
         .galerie-item:hover .galerie-caption { opacity:1; }
         #galerie-lightbox { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:4000;align-items:center;justify-content:center;flex-direction:column;gap:1rem; }
         #galerie-lightbox.show { display:flex;animation:fadeIn 0.2s ease; }
-        #galerie-lightbox img { max-width:90vw;max-height:80vh;border-radius:16px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+        #galerie-lightbox img { max-width:90vw;max-height:80vh;border-radius:16px;object-fit:contain; }
         .lb-caption { color:white;font-size:1rem;font-weight:600;opacity:0.85; }
         .lb-close { position:fixed;top:20px;right:25px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:44px;height:44px;color:white;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.3s ease; }
         .lb-close:hover { background:rgba(255,255,255,0.3); }
-        @media(max-width:480px){ .galerie-grid{grid-template-columns:repeat(2,1fr);gap:0.7rem;} .galerie-modal-content{border-radius:16px;max-height:92vh;} .galerie-download-btn{padding:0.3rem 0.6rem;font-size:0.6rem;} }
+        @media(max-width:480px){ .galerie-grid{grid-template-columns:repeat(2,1fr);gap:0.7rem;} }
     `;
     document.head.appendChild(style);
 
-    // Modal galerie
     const modal = document.createElement('div');
     modal.id = 'galerie-modal';
     modal.innerHTML = `
@@ -1022,29 +1015,21 @@ function initHeroGallery() {
     `;
     document.body.appendChild(modal);
 
-    // Lightbox
     const lightbox = document.createElement('div');
     lightbox.id = 'galerie-lightbox';
     lightbox.innerHTML = `<button class="lb-close">&times;</button><img src="" alt=""><p class="lb-caption"></p>`;
     document.body.appendChild(lightbox);
 
-    // Événements pour les boutons de téléchargement
-    const downloadBtns = modal.querySelectorAll('.galerie-download-btn');
-    downloadBtns.forEach(btn => {
+    modal.querySelectorAll('.galerie-download-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const src = btn.getAttribute('data-src');
-            const title = btn.getAttribute('data-title');
-            telechargerImage(src, title);
+            telechargerImage(btn.getAttribute('data-src'), btn.getAttribute('data-title'));
         });
     });
 
-    // Clic sur l'image → lightbox
-    const items = modal.querySelectorAll('.galerie-item');
-    items.forEach((item, idx) => {
+    modal.querySelectorAll('.galerie-item').forEach((item, idx) => {
         item.addEventListener('click', (e) => {
-            // Ne pas ouvrir la lightbox si on clique sur le bouton de téléchargement
-            if (e.target.classList.contains('galerie-download-btn')) return;
+            if (e.target.closest('.galerie-download-btn')) return;
             const p = galeriePhotos[idx];
             lightbox.querySelector('img').src = p.src;
             lightbox.querySelector('img').alt = p.alt;
@@ -1063,64 +1048,60 @@ function initHeroGallery() {
 
     btn.addEventListener('click', () => modal.classList.add('show'));
 }
-// ===== TÉLÉCHARGER UNE IMAGE =====
+
+// ===== TÉLÉCHARGER IMAGE =====
 function telechargerImage(src, titre) {
-    console.log("Téléchargement de:", src);
-    
-    // Méthode avec fetch pour contourner les problèmes CORS
     fetch(src)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Image non trouvée');
-            }
+            if (!response.ok) throw new Error('Image non trouvée');
             return response.blob();
         })
         .then(blob => {
-            const url = window.URL.createObjectURL(blob);
+            const url  = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
-            const nomFichier = titre.replace(/\s+/g, '-').toLowerCase();
-            link.download = `awa-faye-${nomFichier}.jpg`;
+            link.href  = url;
+            link.download = `awa-faye-${titre.replace(/\s+/g, '-').toLowerCase()}.jpg`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
-            
-            // Notification de succès
-            const notif = document.createElement('div');
-            notif.textContent = `📸 "${titre}" téléchargé avec succès !`;
-            notif.style.cssText = `position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#27ae60; color:white; padding:10px 20px; border-radius:40px; z-index:10002; animation:slideInUp 0.3s ease; font-size:14px;`;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 2000);
+            showToast(`📸 "${titre}" téléchargé !`, '#27ae60');
         })
-        .catch(error => {
-            console.error("Erreur:", error);
-            // Fallback: ouvrir dans un nouvel onglet
+        .catch(() => {
             window.open(src, '_blank');
-            const notif = document.createElement('div');
-            notif.textContent = `📸 "${titre}" - L'image s'ouvre dans un nouvel onglet. Faites "Enregistrer sous..." pour la télécharger.`;
-            notif.style.cssText = `position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#e67e22; color:white; padding:10px 20px; border-radius:40px; z-index:10002; font-size:12px; text-align:center;`;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
+            showToast(`📸 Image ouverte dans un nouvel onglet`, '#e67e22');
         });
 }
+
+function showToast(message, color = 'var(--clr-accent)') {
+    const notif = document.createElement('div');
+    notif.textContent = message;
+    notif.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:${color};color:white;padding:10px 20px;border-radius:40px;z-index:10002;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 2500);
+}
+
 // ===== ANIMATION VAGUE =====
 function animateGreetingWave() {
     // Géré en CSS via @keyframes wave
 }
 
-// ===== PARALLAXE SOURIS =====
+// ===== PARALLAXE SOURIS (désactivé sur mobile) =====
 function initMouseParallax() {
+    if (window.innerWidth <= 768) return;
+
     const hero   = document.querySelector('.hero-section');
     const avatar = document.querySelector('.hero-avatar');
     if (!hero || !avatar) return;
+
     let ticking = false;
     hero.addEventListener('mousemove', (e) => {
-        if (ticking) return; ticking = true;
+        if (ticking) return;
+        ticking = true;
         requestAnimationFrame(() => {
             const rect = hero.getBoundingClientRect();
-            const x = (e.clientX - rect.left - rect.width  / 2) / rect.width;
-            const y = (e.clientY - rect.top  - rect.height / 2) / rect.height;
+            const x    = (e.clientX - rect.left - rect.width  / 2) / rect.width;
+            const y    = (e.clientY - rect.top  - rect.height / 2) / rect.height;
             avatar.style.transform = `translateY(-30px) rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
             ticking = false;
         });
@@ -1131,10 +1112,14 @@ function initMouseParallax() {
     });
 }
 
-// ===== PARTICULES QUI TOMBENT (CANVAS) =====
+// ===== PARTICULES (CANVAS) =====
 function initParticleBackground() {
     const hero = document.querySelector('.hero-section');
     if (!hero) return;
+
+    // Réduire le nombre de particules sur mobile
+    const isMobile = window.innerWidth <= 768;
+    const COUNT    = isMobile ? 30 : 80;
 
     const canvas = document.createElement('canvas');
     canvas.id = 'particles-canvas';
@@ -1142,16 +1127,15 @@ function initParticleBackground() {
     hero.style.position = 'relative';
     hero.insertBefore(canvas, hero.firstChild);
 
-    const ctx   = canvas.getContext('2d');
-    const COUNT = 80;
+    const ctx = canvas.getContext('2d');
     let W, H, particles, animId;
 
     function resize() { W = canvas.width = hero.offsetWidth; H = canvas.height = hero.offsetHeight; }
 
     function newParticle(fromTop) {
         return {
-            x: Math.random() * (W || 800),
-            y: fromTop ? -10 : Math.random() * (H || 600),
+            x:           Math.random() * (W || 800),
+            y:           fromTop ? -10 : Math.random() * (H || 600),
             size:        Math.random() * 3 + 1,
             speedY:      Math.random() * 0.8 + 0.3,
             speedX:      (Math.random() - 0.5) * 0.4,
@@ -1165,8 +1149,8 @@ function initParticleBackground() {
     function getColor(op) {
         const dark = document.body.getAttribute('data-theme') === 'dark';
         const pool = dark
-            ? [`rgba(168,199,250,${op})`,`rgba(255,255,255,${op})`,`rgba(125,168,247,${op})`,`rgba(200,220,255,${op})`]
-            : [`rgba(44,62,80,${op})`,`rgba(90,110,130,${op})`,`rgba(52,84,110,${op})`,`rgba(44,62,80,${op*0.5})`];
+            ? [`rgba(168,199,250,${op})`,`rgba(255,255,255,${op})`,`rgba(125,168,247,${op})`]
+            : [`rgba(44,62,80,${op})`,`rgba(90,110,130,${op})`,`rgba(52,84,110,${op})`];
         return pool[Math.floor(Math.random() * pool.length)];
     }
 
@@ -1202,6 +1186,7 @@ function initParticleBackground() {
 
 // ===== GLOW SUR LES CARTES =====
 function initGlowEffect() {
+    if (window.innerWidth <= 768) return;
     document.querySelectorAll('.projet-carte,.skill-category,.colonne').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const r = card.getBoundingClientRect();
@@ -1213,7 +1198,9 @@ function initGlowEffect() {
 
 // ===== ÉLÉMENTS FLOTTANTS =====
 function initFloatingElements() {
-    document.querySelectorAll('.langue').forEach((el, i) => el.style.animationDelay = `${i * 0.2}s`);
+    document.querySelectorAll('.langue').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.2}s`;
+    });
 
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
