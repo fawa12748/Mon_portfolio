@@ -527,7 +527,7 @@ function initContact() {
         setTimeout(() => {
             if (feedback) {
                 feedback.className = 'form-feedback success';
-                feedback.innerHTML = '✅ Message envoyé avec succès ! Merci !';
+                feedback.innerHTML = '✅ 💖 Message envoyé avec succès 💖 ! Merci !';
             }
             isResetting = true;
             form.reset();
