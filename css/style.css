@@ -462,8 +462,8 @@ body {
     border-bottom: 8px solid var(--clr-surface);
 }
 .qr-popover img {
-    width: 120px;
-    height: 120px;
+    width: 200px;
+    height: 200px;
     border-radius: 12px;
     background: white;
     padding: 8px;
