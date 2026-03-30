@@ -11,8 +11,8 @@ const PROJETS = [
         description: "Enquête terrain sur le trafic routier à Thiès. Collecte et analyse de données d'infrastructures routières.",
         tags: ["QGIS", "KoboToolBox", "Multi Counter"],
         categorie: "sig",
-        lien: "#",
-        image: "../image/trc.jpg"
+        lien: "pdf/trafic.pdf",
+        image: "image/trc.jpg"
     },
     {
         id: 2,
@@ -21,7 +21,7 @@ const PROJETS = [
         tags: ["RStudio"],
         categorie: "data",
         lien: "pdf/analyse.pdf",
-        image: "../image/qualite.png"
+        image: "image/qualite.png"
     },
     {
         id: 3,
@@ -29,8 +29,8 @@ const PROJETS = [
         description: "Vitrine en ligne pour présenter compétences, projets et formulaire de contact.",
         tags: ["VScode", "HTML5", "CSS3", "JavaScript"],
         categorie: "web",
-        lien: "#",
-        image: "../image/portf.png"
+        lien: "pdf/portf.pdf",
+        image: "image/portf.png"
     },
     {
         id: 4,
@@ -38,8 +38,8 @@ const PROJETS = [
         description: "Réalisation d'un CV responsive avec HTML et CSS.",
         categorie: "web",
         tags: ["VSCode", "CSS", "HTML"],
-        lien: "#",
-        image: "../image/cv.png"
+        lien: "pdf/Mon_cv.pdf",
+        image: "image/cv.png"
     }
 ];
 
