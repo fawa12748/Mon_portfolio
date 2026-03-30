@@ -11,8 +11,8 @@ const PROJETS = [
         description: "Enquête terrain sur le trafic routier à Thiès. Collecte et analyse de données d'infrastructures routières.",
         tags: ["QGIS", "KoboToolBox", "Multi Counter"],
         categorie: "sig",
-        lien: "#",
-        image: "../image/trc.jpg"
+        lien: "pdf/trafic.pdf",
+        image: "image/trc.jpg"
     },
     {
         id: 2,
@@ -20,8 +20,8 @@ const PROJETS = [
         description: "Analyse des niveaux de pollution à partir de capteurs répartis en zones.",
         tags: ["RStudio"],
         categorie: "data",
-        lien: "#",
-        image: "images/projets/dynamique-urbaine.jpg"
+        lien: "pdf/analyse.pdf",
+        image: "image/qualite.png"
     },
     {
         id: 3,
@@ -29,8 +29,8 @@ const PROJETS = [
         description: "Vitrine en ligne pour présenter compétences, projets et formulaire de contact.",
         tags: ["VScode", "HTML5", "CSS3", "JavaScript"],
         categorie: "web",
-        lien: "#",
-        image: "../image/portf.png"
+        lien: "pdf/portf.pdf",
+        image: "image/portf.png"
     },
     {
         id: 4,
@@ -38,8 +38,8 @@ const PROJETS = [
         description: "Réalisation d'un CV responsive avec HTML et CSS.",
         categorie: "web",
         tags: ["VSCode", "CSS", "HTML"],
-        lien: "#",
-        image: "../image/cv.png"
+        lien: "pdf/Mon_cv.pdf",
+        image: "image/cv.png"
     }
 ];
 
@@ -87,19 +87,19 @@ const competences = [
 
 // ===== DONNÉES GALERIE =====
 const galeriePhotos = [
-    { src: "../image/galerie/trf1.png", alt: "Projets trafic", caption: "Carte de chaleur du trafic total" },
-    { src: "../image/galerie/trf2.png", alt: "Projets trafic", caption: "Carte du trafic par période" },
-    { src: "../image/galerie/trf3.png", alt: "Projets trafic", caption: "Carte du trafic par type de véhicule" },
-    { src: "../image/galerie/trf4.png", alt: "Projets trafic", caption: "Carte du trafic total par carrefour" },
-    { src: "../image/galerie/CARTO.jpg", alt: "Analyse spatiale", caption: "Numérisation" },
-    { src: "../image/galerie/cartesen.png", alt: "carte", caption: "Carte du Sénégal" },
-    { src: "../image/galerie/grp1.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/grp2.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/grp3.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/grp4.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/grp5.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/grp6.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
+    { src: "image/galerie/trf1.png", alt: "Projets trafic", caption: "Carte de chaleur du trafic total" },
+    { src: "image/galerie/trf2.png", alt: "Projets trafic", caption: "Carte du trafic par période" },
+    { src: "image/galerie/trf3.png", alt: "Projets trafic", caption: "Carte du trafic par type de véhicule" },
+    { src: "image/galerie/trf4.png", alt: "Projets trafic", caption: "Carte du trafic total par carrefour" },
+    { src: "image/galerie/CARTO.jpg", alt: "Analyse spatiale", caption: "Numérisation" },
+    { src: "image/galerie/cartesen.png", alt: "carte", caption: "Carte du Sénégal" },
+    { src: "image/galerie/grp1.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/grp2.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/grp3.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/grp4.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/grp5.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/grp6.png", alt: "Graphique", caption: "Analyse de données" },
+    { src: "image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
 ];
 
 // ===== DÉTECTION MOBILE =====
