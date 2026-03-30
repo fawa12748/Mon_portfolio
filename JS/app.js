@@ -293,6 +293,16 @@ function renderProjets(filtre = 'tous') {
         });
     });
 }
+// ===== MODAL DÉTAIL PROJET - AJOUTER ICI !!! =====
+function ouvrirProjetModal(projet) {
+    // Affiche un message avec les infos du projet
+    alert(`📁 Projet: ${projet.titre}\n\n📝 Description: ${projet.description}\n\n🛠️ Outils: ${projet.tags.join(", ")}`);
+    
+    // Ouvre le PDF directement
+    if (projet.lien && projet.lien !== '#') {
+        window.open(projet.lien, '_blank');
+    }
+}
 
 // ===== FILTRES PROJETS =====
 function initFiltres() {

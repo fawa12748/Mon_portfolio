@@ -152,7 +152,26 @@
 [data-theme="dark"] .carte-tags-title { color: #adb5bd !important; }
 [data-theme="dark"] .carte-desc { color: #adb5bd !important; }
 
+/* ===== CORRECTION BOUTON MODE SOMBRE ===== */
+[data-theme="dark"] button.carte-lien {
+    background: #2c3e50 !important;
+    border: 2px solid #e9ecef !important;
+    color: #e9ecef !important;
+}
 
+[data-theme="dark"] button.carte-lien:hover {
+    background: #e9ecef !important;
+    color: #2c3e50 !important;
+    border-color: #e9ecef !important;
+}
+
+[data-theme="dark"] button.carte-lien i {
+    color: #e9ecef !important;
+}
+
+[data-theme="dark"] button.carte-lien:hover i {
+    color: #2c3e50 !important;
+}
 /* ===== RESET & BASE ===== */
 * {
     margin: 0;
