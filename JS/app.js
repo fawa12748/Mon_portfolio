@@ -38,7 +38,7 @@ const PROJETS = [
         description: "Réalisation d'un CV responsive avec HTML et CSS.",
         categorie: "web",
         tags: ["VSCode", "CSS", "HTML"],
-        lien: "pdf/Mon_cv.pdf",
+        lien: "pdf/cv.pdf",
         image: "image/cv.png"
     }
 ];
