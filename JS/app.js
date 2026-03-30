@@ -99,7 +99,7 @@ const galeriePhotos = [
     { src: "image/galerie/grp4.png", alt: "Graphique", caption: "Analyse de données" },
     { src: "image/galerie/grp5.png", alt: "Graphique", caption: "Analyse de données" },
     { src: "image/galerie/grp6.png", alt: "Graphique", caption: "Analyse de données" },
-    { src: "../image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
+    { src: "image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
 ];
 
 // ===== DÉTECTION MOBILE =====
