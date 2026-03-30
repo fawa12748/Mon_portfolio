@@ -726,7 +726,7 @@ body {
     align-items: center;
     gap: 1.5rem;
     flex-shrink: 0;
-    transform: translateX(180px);
+    transform: translateX(80px);
     position: relative;
 }
 .hero-image {
@@ -821,7 +821,7 @@ body {
     justify-content: center;
     gap: 1.5rem;
     margin-top: 0;
-    transform: translateY(60px);
+    margin-left: -80px;
 }
 .social-icon {
     width: 60px;
@@ -1132,7 +1132,7 @@ body {
     gap: 3rem;
 }
 
-/* ===== CARTE ===== */
+/* ===== CARTE PROJET - ORDRE CORRECT ===== */
 .projet-carte {
     background: var(--clr-surface);
     border-radius: 20px;
@@ -1144,109 +1144,105 @@ body {
     flex-direction: column;
     height: 100%;
 }
-.projet-carte:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-md);
-}
+
+/* Image en premier */
 .carte-img {
-    height: 250px;
+    height: 220px;
     width: 100%;
     overflow: hidden;
     position: relative;
+    flex-shrink: 0;
 }
+
 .carte-img-real {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    display: block;
     transition: transform 0.5s ease;
 }
-.projet-carte:hover .carte-img-real { transform: scale(1.08); }
-.carte-img-fallback {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
-    color: white;
-    text-align: center;
+
+.projet-carte:hover .carte-img-real {
+    transform: scale(1.05);
 }
-.carte-img-fallback i { font-size: 3rem; }
-.carte-img-fallback span { font-size: 0.9rem; font-weight: 500; }
+
+/* Corps de la carte - contient tout le texte */
 .carte-body {
-    padding: 1.8rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     flex: 1;
 }
+
+/* Titre en premier dans le body */
 .carte-titre {
-    font-size: 1.4rem;
-    margin-bottom: 0.6rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
     font-family: var(--font-display);
     color: var(--clr-text);
-    order: 1;
+    font-weight: 700;
 }
+
+/* Description ensuite */
 .carte-desc {
     color: var(--clr-text-muted);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     margin-bottom: 1rem;
-    order: 2;
 }
+
+/* Tags/Outils ensuite */
 .carte-tags {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid var(--clr-border);
-    order: 3;
+    margin: 0.5rem 0;
 }
+
 .carte-tag {
-    padding: 0.3rem 1rem;
+    padding: 0.3rem 0.8rem;
     background: rgba(44, 62, 80, 0.1);
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--clr-accent);
     transition: var(--transition);
 }
+
 .carte-tag:hover {
     background: rgba(44, 62, 80, 0.2);
     transform: translateY(-2px);
 }
+
+/* Bouton Voir le projet en dernier */
 .carte-lien {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     color: var(--clr-accent);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     border-radius: 50px;
-    padding: 0.5rem 1.2rem;
+    padding: 0.6rem 1.2rem;
     background: transparent;
     border: 2px solid var(--clr-border);
     margin-top: 1rem;
     transition: all 0.3s ease;
     width: fit-content;
-    order: 4;
     cursor: pointer;
-    font-family: var(--font-body);
 }
-.carte-lien i { transition: transform 0.3s ease; }
+
 .carte-lien:hover {
     gap: 0.7rem;
     background: var(--clr-accent);
     border-color: var(--clr-accent);
     color: white;
 }
-.carte-lien:hover i { transform: translateX(5px); }
 
+.carte-lien:hover i {
+    transform: translateX(5px);
+}
 /* ===== COMPÉTENCES ===== */
 .skills-wrapper {
     display: grid;
@@ -1968,6 +1964,47 @@ body {
     /* --- TITRES --- */
     .section-title { font-size: 1.8rem; }
     .section-title i { font-size: 1.5rem; padding: 0.4rem; }
+}
+/* Dans votre style.css, à la fin de la section mobile */
+@media (max-width: 768px) {
+    /* Améliorer la zone tactile des boutons */
+    button, 
+    .filtre-btn, 
+    .carte-lien, 
+    .social-icon,
+    .nav-link,
+    .qr-trigger,
+    .theme-btn,
+    .btn-cv-hero,
+    .btn-projects-hero,
+    .btn-galerie-hero {
+        min-height: 44px; /* Taille minimum recommandée pour le tactile */
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent; /* Supprimer le flash gris sur tap */
+    }
+    
+    /* Éviter les problèmes de z-index */
+    .qr-popover {
+        display: none !important; /* Désactiver le popover sur mobile, utiliser le modal à la place */
+    }
+    
+    /* Assurer que les modals sont bien au-dessus */
+    #qr-modal-full,
+    #galerie-modal,
+    #projet-modal,
+    .share-modal {
+        z-index: 10000 !important;
+    }
+    
+    /* Améliorer le retour visuel au toucher */
+    .btn-cv-hero:active,
+    .btn-projects-hero:active,
+    .btn-galerie-hero:active,
+    .filtre-btn:active,
+    .carte-lien:active {
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+    }
 }
 
 /* ===== TRÈS PETIT MOBILE (max-width: 480px) ===== */

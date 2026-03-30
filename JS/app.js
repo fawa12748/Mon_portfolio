@@ -1,6 +1,6 @@
 /* ============================================
    AWA FAYE — PORTFOLIO GÉOMATIQUE
-   app.js — Version Finale Complète + Corrigée Mobile
+   app.js — Version Finale Complète Corrigée
    ============================================ */
 
 // ===== DONNÉES PROJETS =====
@@ -102,6 +102,10 @@ const galeriePhotos = [
     { src: "../image/galerie/carte.png", alt: "Graphique", caption: "Région de Tamba" }
 ];
 
+// ===== DÉTECTION MOBILE =====
+const isMobile = () => window.innerWidth <= 768;
+const isTablet = () => window.innerWidth > 768 && window.innerWidth <= 1024;
+
 // ===== INITIALISATION =====
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -128,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initMouseParallax();
     initGlowEffect();
     initFloatingElements();
-    animateGreetingWave();
+    
     console.log("🎉 Portfolio Awa Faye — initialisé avec succès !");
 });
 
@@ -139,32 +143,6 @@ function initTheme() {
     const label = document.getElementById('tLabel');
     const body  = document.body;
 
-    const style = document.createElement('style');
-    style.textContent = `
-        .theme-grain {
-            position:fixed; border-radius:50%; pointer-events:none; z-index:99999;
-            animation:grainFall var(--dur) ease-in forwards;
-        }
-        @keyframes grainFall {
-            0%   { transform:translate(0,0) scale(1) rotate(0deg); opacity:1; }
-            70%  { opacity:0.8; }
-            100% { transform:translate(var(--tx),var(--ty)) scale(var(--sf)) rotate(var(--rot)); opacity:0; }
-        }
-        .theme-icon.spinning {
-            animation:iconSpin 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
-        }
-        @keyframes iconSpin {
-            0%   { transform:rotate(0deg) scale(1); }
-            50%  { transform:rotate(180deg) scale(1.35); }
-            100% { transform:rotate(360deg) scale(1); }
-        }
-        body.theme-transitioning * {
-            transition:background-color 0.45s ease, color 0.45s ease,
-                       border-color 0.45s ease, box-shadow 0.45s ease !important;
-        }
-    `;
-    document.head.appendChild(style);
-
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
     updateThemeUI(savedTheme, icon, label);
@@ -174,52 +152,6 @@ function initTheme() {
     btn.addEventListener('click', () => {
         const current = body.getAttribute('data-theme');
         const next    = current === 'dark' ? 'light' : 'dark';
-
-        // Grains animés
-        const rect    = btn.getBoundingClientRect();
-        const originX = rect.left + rect.width  / 2;
-        const originY = rect.top  + rect.height / 2;
-        const colors  = next === 'dark'
-            ? ['#a8c7fa','#7ba7f7','#4d87f5','#c9d8ff','#ffffff','#e0ecff']
-            : ['#ffd166','#ffb347','#ff9a3c','#fff3b0','#ffffff','#ffe08a'];
-
-        for (let i = 0; i < 22; i++) {
-            setTimeout(() => {
-                const grain = document.createElement('div');
-                grain.className = 'theme-grain';
-                const size  = Math.random() * 7 + 2;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const angle = Math.random() * 200 - 100;
-                const rad   = angle * Math.PI / 180;
-                const dist  = Math.random() * 120 + 60;
-                const tx    = Math.sin(rad) * dist;
-                const ty    = Math.cos(rad) * dist + 40;
-                const rot   = (Math.random() - 0.5) * 720;
-                const dur   = (Math.random() * 0.5 + 0.6).toFixed(2);
-                const sf    = (Math.random() * 0.4 + 0.1).toFixed(2);
-                grain.style.cssText = `
-                    width:${size}px;height:${size}px;background:${color};
-                    left:${originX - size/2}px;top:${originY - size/2}px;
-                    --tx:${tx}px;--ty:${ty}px;--rot:${rot}deg;--dur:${dur}s;--sf:${sf};
-                    box-shadow:0 0 ${size}px ${color}80;
-                `;
-                document.body.appendChild(grain);
-                grain.addEventListener('animationend', () => grain.remove());
-            }, i * 18);
-        }
-
-        // Rotation icône
-        if (icon) {
-            icon.classList.remove('spinning');
-            void icon.offsetWidth;
-            icon.classList.add('spinning');
-            icon.addEventListener('animationend', () => icon.classList.remove('spinning'), { once: true });
-        }
-
-        // Transition douce
-        body.classList.add('theme-transitioning');
-        setTimeout(() => body.classList.remove('theme-transitioning'), 500);
-
         body.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         updateThemeUI(next, icon, label);
@@ -243,24 +175,36 @@ function initHamburger() {
     const navMenu   = document.querySelector('.nav-menu');
     if (!hamburger || !navMenu) return;
 
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
+    const closeMenu = () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    const openMenu = () => {
+        hamburger.classList.add('active');
+        navMenu.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (navMenu.classList.contains('active')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
     });
 
-    // Fermer au clic sur un lien
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
+        link.addEventListener('click', closeMenu);
     });
 
-    // Fermer au clic en dehors
     document.addEventListener('click', (e) => {
-        if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+        if (navMenu.classList.contains('active') && 
+            !hamburger.contains(e.target) && 
+            !navMenu.contains(e.target)) {
+            closeMenu();
         }
     });
 }
@@ -341,7 +285,8 @@ function renderProjets(filtre = 'tous') {
     });
 
     container.querySelectorAll('.btn-voir-projet').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
             const id = parseInt(btn.dataset.id);
             const projet = PROJETS.find(p => p.id === id);
             if (projet) ouvrirProjetModal(projet);
@@ -383,7 +328,7 @@ function ouvrirProjetModal(projet) {
             .projet-modal-header {
                 display:flex; justify-content:space-between; align-items:center;
                 padding:1.5rem 1.8rem; background:var(--clr-bg-alt);
-                border-bottom:1px solid var(--clr-border); position:sticky; top:0; z-index:1;
+                border-bottom:1px solid var(--clr-border);
             }
             .projet-modal-header h3 {
                 font-family:var(--font-display); font-size:1.4rem; margin:0;
@@ -391,8 +336,7 @@ function ouvrirProjetModal(projet) {
             }
             .projet-modal-close {
                 background:none; border:none; font-size:2rem; cursor:pointer;
-                color:var(--clr-text-muted); line-height:1; transition:all 0.3s ease;
-                padding:0.2rem 0.5rem; border-radius:8px;
+                color:var(--clr-text-muted); transition:all 0.3s ease;
             }
             .projet-modal-close:hover { transform:rotate(90deg); color:var(--clr-accent); }
             .projet-modal-body { padding:2rem 1.8rem; }
@@ -421,13 +365,11 @@ function ouvrirProjetModal(projet) {
                 display:inline-flex; align-items:center; gap:0.8rem;
                 padding:1rem 2rem; background:var(--clr-accent); color:white;
                 border:none; border-radius:40px; cursor:pointer;
-                font-size:1rem; font-weight:600; font-family:var(--font-body);
-                transition:all 0.3s ease; text-decoration:none; width:100%;
-                justify-content:center;
+                font-size:1rem; font-weight:600; transition:all 0.3s ease;
+                text-decoration:none; width:100%; justify-content:center;
             }
             .btn-projet-modal-lien:hover { transform:translateY(-3px); filter:brightness(1.1); }
             .btn-projet-modal-lien.disabled { opacity:0.6; cursor:not-allowed; background:var(--clr-text-muted); }
-            .btn-projet-modal-lien.disabled:hover { transform:none; filter:none; }
         `;
         document.head.appendChild(style);
     }
@@ -445,12 +387,11 @@ function ouvrirProjetModal(projet) {
     const btnClass = aLien ? 'btn-projet-modal-lien' : 'btn-projet-modal-lien disabled';
     const btnAttr  = aLien ? `href="${projet.lien}" target="_blank" rel="noopener noreferrer"` : '';
     const btnTag   = aLien ? 'a' : 'button';
-    const emoji    = projet.emoji || '🗺️';
 
     modal.innerHTML = `
         <div class="projet-modal-box">
             <div class="projet-modal-header">
-                <h3>${emoji} ${projet.titre}</h3>
+                <h3><i class="fas fa-project-diagram"></i> ${projet.titre}</h3>
                 <button class="projet-modal-close">&times;</button>
             </div>
             <div class="projet-modal-body">
@@ -535,7 +476,7 @@ function initReveal() {
                 obs.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.12 });
 
     document.querySelectorAll('.reveal, .colonne, .projet-carte, .skill-category, .contact-card, .contact-form')
         .forEach(el => obs.observe(el));
@@ -586,7 +527,7 @@ function initContact() {
         setTimeout(() => {
             if (feedback) {
                 feedback.className = 'form-feedback success';
-                feedback.innerHTML = '✅ 💖 Message envoyé avec succès 💖 ! Merci !';
+                feedback.innerHTML = '✅ Message envoyé avec succès ! Merci !';
             }
             isResetting = true;
             form.reset();
@@ -599,7 +540,7 @@ function initContact() {
             setTimeout(() => {
                 if (feedback) { feedback.className = 'form-feedback'; feedback.textContent = ''; }
             }, 5000);
-        }, 1800);
+        }, 1500);
     });
 }
 
@@ -633,9 +574,8 @@ function clearErrors() {
     ['nom','email','message'].forEach(id => {
         const err = document.getElementById(`error-${id}`);
         const inp = document.getElementById(id);
-        if (err) err.textContent       = '';
+        if (err) err.textContent = '';
         if (inp) inp.style.borderColor = '';
-        if (inp) inp.style.boxShadow   = '';
     });
 }
 
@@ -649,43 +589,25 @@ function initBackToTop() {
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// ===== ANIMATIONS HERO — CORRECTION MOBILE =====
+// ===== ANIMATIONS HERO =====
 function initAnimations() {
-    // Détecter si on est sur mobile pour simplifier l'animation
-    const isMobile = window.innerWidth <= 768;
-
     const selectors = [
-        '.hero-greeting',
-        '.hero-name-wrapper',
-        '.hero-title-wrapper',
-        '.hero-description',
-        '.hero-buttons',
-        '.hero-image',
-        '.hero-social'
+        '.hero-greeting', '.hero-name-wrapper', '.hero-title-wrapper',
+        '.hero-description', '.hero-buttons', '.hero-image', '.hero-social'
     ];
 
     selectors.forEach((sel, i) => {
         const el = document.querySelector(sel);
         if (!el) return;
-
-        // Appliquer l'état initial
-        el.style.opacity   = '0';
+        el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`;
-
-        // Double rAF : garantit que le navigateur applique l'état initial avant d'animer
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                el.style.opacity   = '1';
+                el.style.opacity = '1';
                 el.style.transform = 'translateY(0)';
             });
         });
-    });
-
-    // Interactions hover sur les stat-cards
-    document.querySelectorAll('.stat-card').forEach(card => {
-        card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-5px)'; });
-        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
     });
 }
 
@@ -694,65 +616,48 @@ function initDownloadCV() {
     const btn = document.getElementById('download-cv-hero');
     if (!btn) return;
     btn.addEventListener('click', () => {
-        const toast = document.createElement('div');
-        toast.style.cssText = `position:fixed;top:100px;right:20px;background:var(--clr-accent);color:white;padding:1rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.2);`;
-        toast.innerHTML = '<i class="fas fa-check" style="margin-right:8px"></i> Téléchargement du CV...';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        showToast('📄 Téléchargement du CV...', '#2c3e50');
     });
 }
 
-// ===== QR CODE — MODAL AU CLIC =====
+// ===== QR CODE =====
 function initQRCode() {
     const qrBtn = document.getElementById('qrBtn');
     if (!qrBtn) return;
+
+    const portfolioUrl = window.location.href;
+    const qrApiUrl = `https://quickchart.io/qr?text=${encodeURIComponent(portfolioUrl)}&size=200&margin=2`;
 
     const style = document.createElement('style');
     style.textContent = `
         #qr-modal-full { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:5000;align-items:center;justify-content:center; }
         #qr-modal-full.show { display:flex;animation:fadeIn 0.3s ease; }
-        .qr-modal-box { background:var(--clr-surface);border-radius:28px;max-width:420px;width:90%;overflow:hidden;border:1px solid var(--clr-border);animation:scaleIn 0.35s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 32px 80px rgba(0,0,0,0.3); }
-        .qr-modal-box-header { display:flex;justify-content:space-between;align-items:center;padding:1.2rem 1.5rem;background:var(--clr-bg-alt);border-bottom:1px solid var(--clr-border); }
-        .qr-modal-box-header h3 { font-family:var(--font-display);font-size:1.4rem;margin:0;color:var(--clr-text);display:flex;align-items:center;gap:0.6rem; }
-        .qr-modal-box-header h3 i { color:var(--clr-accent); }
-        .qr-modal-box-close { background:none;border:none;font-size:2rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;transition:all 0.3s ease;padding:0.2rem 0.5rem;border-radius:8px; }
-        .qr-modal-box-close:hover { transform:rotate(90deg);color:var(--clr-accent); }
-        .qr-modal-box-body { padding:2rem;text-align:center; }
-        .qr-modal-img-wrap { display:inline-flex;align-items:center;justify-content:center;background:white;border-radius:20px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 32px rgba(0,0,0,0.12); }
-        .qr-modal-img-wrap img { width:240px;height:240px;display:block;border-radius:8px; }
-        .qr-modal-text { color:var(--clr-text-muted);font-size:1rem;margin-bottom:1.4rem;line-height:1.5; }
-        .qr-modal-url { display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.4rem;background:rgba(44,62,80,0.08);border-radius:30px;font-size:0.9rem;color:var(--clr-accent);font-weight:600;margin-bottom:1.4rem;word-break:break-all;cursor:pointer;border:1px solid var(--clr-border);transition:all 0.3s ease; }
-        .qr-modal-url:hover { background:rgba(44,62,80,0.15);transform:translateY(-2px); }
-        .qr-dl-btn { display:inline-flex;align-items:center;gap:0.7rem;padding:0.9rem 2rem;background:var(--clr-accent);color:white;border:none;border-radius:40px;cursor:pointer;font-size:1rem;font-weight:600;font-family:var(--font-body);transition:all 0.3s ease; }
-        .qr-dl-btn:hover { transform:translateY(-3px);filter:brightness(1.1); }
-        @keyframes qrPulse { 0%{transform:scale(1)}40%{transform:scale(0.92)}100%{transform:scale(1)} }
-        .qr-trigger.clicked { animation:qrPulse 0.4s ease; }
+        .qr-modal-box { background:var(--clr-surface);border-radius:28px;max-width:380px;width:90%;overflow:hidden;border:1px solid var(--clr-border);animation:scaleIn 0.35s ease; }
+        .qr-modal-box-header { display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;background:var(--clr-bg-alt);border-bottom:1px solid var(--clr-border); }
+        .qr-modal-box-header h3 { font-family:var(--font-display);font-size:1.2rem;margin:0;display:flex;align-items:center;gap:0.5rem; }
+        .qr-modal-box-close { background:none;border:none;font-size:1.8rem;cursor:pointer;color:var(--clr-text-muted); }
+        .qr-modal-box-body { padding:1.5rem;text-align:center; }
+        .qr-modal-img-wrap { background:white;border-radius:16px;padding:1rem;margin-bottom:1rem;display:inline-block; }
+        .qr-modal-img-wrap img { width:160px;height:160px;display:block; }
+        .qr-modal-text { color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:1rem; }
+        .qr-dl-btn { padding:0.7rem 1.5rem;background:var(--clr-accent);color:white;border:none;border-radius:40px;cursor:pointer;font-size:0.9rem;font-weight:600; }
     `;
     document.head.appendChild(style);
-
-    const portfolioUrl = window.location.href;
-    const qrApiUrl     = `https://quickchart.io/qr?text=${encodeURIComponent(portfolioUrl)}&size=240&margin=2&format=png`;
 
     const modal = document.createElement('div');
     modal.id = 'qr-modal-full';
     modal.innerHTML = `
         <div class="qr-modal-box">
             <div class="qr-modal-box-header">
-                <h3><i class="fas fa-qrcode"></i> QR Code du portfolio</h3>
+                <h3><i class="fas fa-qrcode"></i> QR Code</h3>
                 <button class="qr-modal-box-close">&times;</button>
             </div>
             <div class="qr-modal-box-body">
                 <div class="qr-modal-img-wrap">
-                    <img src="${qrApiUrl}" alt="QR Code portfolio Awa Faye">
+                    <img src="${qrApiUrl}" alt="QR Code">
                 </div>
-                <p class="qr-modal-text">Scannez ce QR code pour accéder<br>directement au portfolio via votre mobile</p>
-                <div class="qr-modal-url" id="qr-url-copy" title="Cliquer pour copier">
-                    <i class="fas fa-link"></i><span>${portfolioUrl}</span>
-                </div>
-                <br>
-                <button class="qr-dl-btn" id="qr-dl-btn">
-                    <i class="fas fa-download"></i> Télécharger le QR
-                </button>
+                <p class="qr-modal-text">Scannez pour accéder au portfolio</p>
+                <button class="qr-dl-btn" id="qr-dl-btn"><i class="fas fa-download"></i> Télécharger</button>
             </div>
         </div>
     `;
@@ -760,43 +665,27 @@ function initQRCode() {
 
     modal.querySelector('.qr-modal-box-close').addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('show'); });
-
-    modal.querySelector('#qr-url-copy').addEventListener('click', () => {
-        navigator.clipboard.writeText(portfolioUrl).then(() => {
-            const el  = modal.querySelector('#qr-url-copy');
-            const ori = el.innerHTML;
-            el.innerHTML = '<i class="fas fa-check"></i> <span>Lien copié !</span>';
-            setTimeout(() => { el.innerHTML = ori; }, 2000);
-        });
-    });
-
     modal.querySelector('#qr-dl-btn').addEventListener('click', () => {
         const a = document.createElement('a');
-        a.href = qrApiUrl; a.download = 'qr-portfolio-awa-faye.png'; a.target = '_blank';
+        a.href = qrApiUrl;
+        a.download = 'qr-portfolio-awa-faye.png';
         a.click();
     });
 
     qrBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        qrBtn.classList.remove('clicked');
-        void qrBtn.offsetWidth;
-        qrBtn.classList.add('clicked');
-        qrBtn.addEventListener('animationend', () => qrBtn.classList.remove('clicked'), { once: true });
         modal.classList.add('show');
     });
 }
 
 // ===== BOUTON PARTAGE =====
 function initShareButton() {
-    const shareBtn      = document.getElementById('share-btn');
-    const modal         = document.getElementById('share-modal');
-    const closeBtn      = modal ? modal.querySelector('.share-modal-close') : null;
-    const shareFeedback = document.getElementById('share-feedback');
+    const shareBtn = document.getElementById('share-btn');
+    const modal = document.getElementById('share-modal');
     if (!shareBtn || !modal) return;
 
     shareBtn.addEventListener('click', () => modal.classList.add('show'));
-    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+    modal.querySelector('.share-modal-close')?.addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
 
     modal.querySelectorAll('.share-option').forEach(btn => {
@@ -806,11 +695,10 @@ function initShareButton() {
             switch (btn.dataset.platform) {
                 case 'linkedin': shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`; break;
                 case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`; break;
-                case 'github':   shareUrl = `https://github.com`; break;
                 case 'copy':
                     navigator.clipboard.writeText(window.location.href)
-                        .then(()  => showShareFeedback('✅ Lien copié !', 'success'))
-                        .catch(() => showShareFeedback('❌ Impossible de copier.', 'error'));
+                        .then(() => showShareFeedback('✅ Lien copié !', 'success'))
+                        .catch(() => showShareFeedback('❌ Erreur', 'error'));
                     return;
             }
             if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
@@ -818,45 +706,85 @@ function initShareButton() {
     });
 
     function showShareFeedback(msg, type) {
-        if (!shareFeedback) return;
-        shareFeedback.textContent = msg;
-        shareFeedback.className   = `share-feedback show ${type}`;
-        setTimeout(() => { shareFeedback.className = 'share-feedback'; }, 3000);
+        const fb = document.getElementById('share-feedback');
+        if (!fb) return;
+        fb.textContent = msg;
+        fb.className = `share-feedback show ${type}`;
+        setTimeout(() => fb.className = 'share-feedback', 3000);
     }
 }
 
-// ===== VUE RESPONSIVE =====
+// ===== VUE RESPONSIVE (DESKTOP/TABLETTE/MOBILE) =====
+// ===== VUE RESPONSIVE (DESKTOP/TABLETTE/MOBILE) - CORRIGÉE =====
 function initViewToggle() {
     const btns = document.querySelectorAll('.view-toggle-btn');
+    const container = document.querySelector('.view-toggle-container');
+    
+    if (!btns.length) return;
+    
+    // S'assurer que le conteneur est visible sur desktop
+    if (container && !isMobile()) {
+        container.style.display = 'flex';
+    }
+    
     btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.body.classList.remove('view-desktop','view-tablet','view-mobile');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const view = btn.getAttribute('data-view');
+            
+            // Retirer la classe active de tous les boutons
             btns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            if (btn.dataset.view !== 'desktop') document.body.classList.add(`view-${btn.dataset.view}`);
+            
+            // Réinitialiser les styles du body
+            document.body.style.maxWidth = '';
+            document.body.style.margin = '';
+            document.body.style.backgroundColor = '';
+            
+            // Appliquer la vue
+            if (view === 'desktop') {
+                document.body.classList.add('view-desktop');
+                showToast('🖥️ Vue Desktop activée', '#2c3e50');
+            } else if (view === 'tablet') {
+                document.body.classList.add('view-tablet');
+                document.body.style.maxWidth = '1024px';
+                document.body.style.margin = '0 auto';
+                showToast('📱 Vue Tablette activée (1024px)', '#2c3e50');
+            } else if (view === 'mobile') {
+                document.body.classList.add('view-mobile');
+                document.body.style.maxWidth = '480px';
+                document.body.style.margin = '0 auto';
+                showToast('📱 Vue Mobile activée (480px)', '#2c3e50');
+            }
         });
     });
+    
+    // Bouton actif par défaut
+    const defaultBtn = document.querySelector('.view-toggle-btn[data-view="desktop"]');
+    if (defaultBtn) defaultBtn.classList.add('active');
 }
-
 // ===== TYPING ANIMATION =====
 function initTypingAnimation() {
     const el = document.getElementById('typing-title');
     if (!el) return;
     const phrases = [
-        "Cartographe passionnée",
-        "Géomaticienne en devenir",
+        "Étudiante en Géomatique",
         "Développeuse web SIG",
+        "Cartographe passionnée",
         "Analyste de données spatiales",
-        "Étudiante en Géomatique"
     ];
     let pi = 0, ci = 0, deleting = false;
     function type() {
         const cur = phrases[pi];
         if (!deleting) {
-            el.textContent = cur.slice(0, ci + 1); ci++;
+            el.textContent = cur.slice(0, ci + 1);
+            ci++;
             if (ci === cur.length) { deleting = true; setTimeout(type, 1800); return; }
         } else {
-            el.textContent = cur.slice(0, ci - 1); ci--;
+            el.textContent = cur.slice(0, ci - 1);
+            ci--;
             if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(type, 400); return; }
         }
         setTimeout(type, deleting ? 60 : 90);
@@ -871,19 +799,16 @@ function initStatsCounter() {
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
-            const el      = entry.target;
-            const match   = el.textContent.match(/\d+/);
+            const el = entry.target;
+            const match = el.textContent.match(/\d+/);
             if (!match) return;
-            const target  = parseInt(match[0]);
+            const target = parseInt(match[0]);
             const hasPlus = el.textContent.includes('+');
-            const pct     = el.querySelector('.percent-sign');
-            let current   = 0;
-            const step    = Math.ceil(target / 40);
-            const timer   = setInterval(() => {
+            let current = 0;
+            const step = Math.ceil(target / 40);
+            const timer = setInterval(() => {
                 current = Math.min(current + step, target);
-                const txt = (hasPlus ? '+' : '') + current;
-                if (pct) el.childNodes[0].textContent = txt;
-                else el.textContent = txt;
+                el.textContent = (hasPlus ? '+' : '') + current;
                 if (current >= target) clearInterval(timer);
             }, 35);
             obs.unobserve(el);
@@ -896,7 +821,7 @@ function initStatsCounter() {
 function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
-            const href   = anchor.getAttribute('href');
+            const href = anchor.getAttribute('href');
             if (href === '#') return;
             const target = document.querySelector(href);
             if (!target) return;
@@ -907,11 +832,13 @@ function initSmoothScroll() {
     });
 }
 
-// ===== CURSEUR PERSONNALISÉ (désactivé sur mobile) =====
+// ===== CURSEUR PERSONNALISÉ =====
 function initCustomCursor() {
-    // Ne pas activer sur écrans tactiles
-    if (window.matchMedia('(hover: none)').matches) return;
-    if (window.innerWidth <= 768) return;
+    if (isMobile() || ('ontouchstart' in window)) {
+        const cursor = document.querySelector('.custom-cursor');
+        if (cursor) cursor.remove();
+        return;
+    }
 
     let cursor = document.querySelector('.custom-cursor');
     if (!cursor) {
@@ -922,36 +849,36 @@ function initCustomCursor() {
 
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
-        cursor.style.top  = e.clientY + 'px';
+        cursor.style.top = e.clientY + 'px';
     });
 
-    const sel = 'a,button,.filtre-btn,.social-icon,.projet-carte,.skill-item,.carte-lien,.view-toggle-btn,.share-option,.nav-link';
+    const sel = 'a,button,.filtre-btn,.social-icon,.projet-carte,.skill-item,.carte-lien,.view-toggle-btn';
     document.addEventListener('mouseover', (e) => { if (e.target.closest(sel)) cursor.classList.add('hover'); });
-    document.addEventListener('mouseout',  (e) => { if (e.target.closest(sel)) cursor.classList.remove('hover'); });
-    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
-    document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
+    document.addEventListener('mouseout', (e) => { if (e.target.closest(sel)) cursor.classList.remove('hover'); });
 }
 
 // ===== RÉSEAUX SOCIAUX =====
 function initSocialLinks() {
-    const map  = {
-        github:    'https://github.com/fawa12748',
-        linkedin:  'https://www.linkedin.com/in/awa-faye-2a0b123b6/',
+    const map = {
+        github: 'https://github.com/fawa12748',
+        linkedin: 'https://www.linkedin.com/in/awa-faye-2a0b123b6/',
         instagram: 'https://www.instagram.com/awafaye2776/',
-        email:     'mailto:fawa12748@gmail.com'
+        email: 'mailto:fawa12748@gmail.com'
     };
     const keys = Object.keys(map);
-    document.querySelectorAll('.social-icon').forEach((el, i) => {
+    document.querySelectorAll('.social-icon, .footer-social-link').forEach((el, i) => {
         const key = keys[i % keys.length];
         if (!el.getAttribute('href') || el.getAttribute('href') === '#') {
             el.href = map[key];
-            if (key !== 'email') { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+            if (key !== 'email') {
+                el.target = '_blank';
+                el.rel = 'noopener noreferrer';
+            }
         }
-        el.title = key.charAt(0).toUpperCase() + key.slice(1);
     });
 }
 
-// ===== GALERIE HERO =====
+// ===== GALERIE HERO (AVEC TÉLÉCHARGEMENT) =====
 function initHeroGallery() {
     const btn = document.getElementById('open-galerie-hero');
     if (!btn) return;
@@ -960,31 +887,38 @@ function initHeroGallery() {
     style.textContent = `
         #galerie-modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);z-index:3000;align-items:center;justify-content:center; }
         #galerie-modal.show { display:flex;animation:fadeIn 0.3s ease; }
-        .galerie-modal-content { background:var(--clr-surface);border-radius:24px;max-width:750px;width:92%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--clr-border);animation:scaleIn 0.3s ease; }
-        .galerie-modal-header { padding:1.2rem 1.6rem;border-bottom:1px solid var(--clr-border);display:flex;justify-content:space-between;align-items:center;background:var(--clr-bg-alt);flex-shrink:0; }
-        .galerie-modal-header h3 { font-family:var(--font-display);font-size:1.5rem;margin:0;color:var(--clr-text);display:flex;align-items:center;gap:0.7rem; }
-        .galerie-modal-header h3 i { color:var(--clr-accent); }
-        .galerie-modal-close { background:none;border:none;font-size:2rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;transition:all 0.3s ease;padding:0.2rem 0.5rem;border-radius:8px; }
-        .galerie-modal-close:hover { transform:rotate(90deg);color:var(--clr-accent); }
-        .galerie-modal-body { padding:1.5rem;overflow-y:auto;flex:1; }
+        .galerie-modal-content { background:var(--clr-surface);border-radius:24px;max-width:850px;width:92%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--clr-border); }
+        .galerie-modal-header { padding:1rem 1.2rem;border-bottom:1px solid var(--clr-border);display:flex;justify-content:space-between;align-items:center;background:var(--clr-bg-alt); }
+        .galerie-modal-header h3 { font-family:var(--font-display);font-size:1.2rem;margin:0;display:flex;align-items:center;gap:0.5rem; }
+        .galerie-modal-close { background:none;border:none;font-size:1.8rem;cursor:pointer;color:var(--clr-text-muted);padding:0 0.5rem; }
+        .galerie-modal-body { padding:1rem;overflow-y:auto; }
         .galerie-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem; }
-        .galerie-item { position:relative;border-radius:14px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;transition:all 0.3s ease;background:var(--clr-bg-alt);cursor:pointer; }
-        .galerie-item:hover { border-color:var(--clr-accent);transform:scale(1.03);box-shadow:var(--shadow-md); }
-        .galerie-image-container { position:relative;width:100%;height:100%;overflow:hidden; }
-        .galerie-image-container img { width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease; }
-        .galerie-item:hover .galerie-image-container img { transform:scale(1.08); }
-        .galerie-download-btn { position:absolute;bottom:10px;right:10px;background:#27ae60;color:white;border:none;border-radius:30px;padding:0.4rem 0.8rem;font-size:0.7rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:0.3rem;opacity:0;transition:opacity 0.3s ease;z-index:10; }
+        .galerie-item { position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;transition:all 0.3s ease;background:var(--clr-bg-alt); }
+        .galerie-item:hover { border-color:var(--clr-accent);transform:scale(1.02); }
+        .galerie-item img { width:100%;height:100%;object-fit:cover;display:block; }
+        .galerie-download-btn { 
+            position:absolute; bottom:10px; right:10px; 
+            background:#27ae60; color:white; border:none; 
+            border-radius:30px; padding:0.3rem 0.8rem; 
+            font-size:0.7rem; font-weight:600; cursor:pointer;
+            display:flex; align-items:center; gap:0.3rem;
+            opacity:0; transition:opacity 0.3s ease; z-index:10;
+        }
         .galerie-item:hover .galerie-download-btn { opacity:1; }
-        .galerie-download-btn:hover { background:#2ecc71; }
-        .galerie-caption { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:white;padding:1rem 0.8rem 0.6rem;font-size:0.85rem;font-weight:600;opacity:0;transition:opacity 0.3s ease;z-index:1; }
+        .galerie-download-btn:hover { background:#2ecc71; transform:scale(1.05); }
+        .galerie-caption { 
+            position:absolute; bottom:0; left:0; right:0;
+            background:linear-gradient(transparent,rgba(0,0,0,0.7));
+            color:white; padding:0.8rem 0.5rem 0.4rem;
+            font-size:0.7rem; font-weight:500; text-align:center;
+            opacity:0; transition:opacity 0.3s ease;
+        }
         .galerie-item:hover .galerie-caption { opacity:1; }
-        #galerie-lightbox { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:4000;align-items:center;justify-content:center;flex-direction:column;gap:1rem; }
-        #galerie-lightbox.show { display:flex;animation:fadeIn 0.2s ease; }
-        #galerie-lightbox img { max-width:90vw;max-height:80vh;border-radius:16px;object-fit:contain; }
-        .lb-caption { color:white;font-size:1rem;font-weight:600;opacity:0.85; }
-        .lb-close { position:fixed;top:20px;right:25px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:44px;height:44px;color:white;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.3s ease; }
-        .lb-close:hover { background:rgba(255,255,255,0.3); }
-        @media(max-width:480px){ .galerie-grid{grid-template-columns:repeat(2,1fr);gap:0.7rem;} }
+        @media(max-width:480px){ 
+            .galerie-grid{grid-template-columns:repeat(2,1fr);gap:0.7rem;}
+            .galerie-download-btn { opacity:1; bottom:5px; right:5px; padding:0.2rem 0.5rem; font-size:0.6rem; }
+            .galerie-caption { opacity:1; font-size:0.6rem; padding:0.4rem 0.3rem 0.2rem; }
+        }
     `;
     document.head.appendChild(style);
 
@@ -997,15 +931,13 @@ function initHeroGallery() {
                 <button class="galerie-modal-close">&times;</button>
             </div>
             <div class="galerie-modal-body">
-                <div class="galerie-grid">
+                <div class="galerie-grid" id="galerie-grid-container">
                     ${galeriePhotos.map((p, i) => `
                         <div class="galerie-item" data-index="${i}">
-                            <div class="galerie-image-container">
-                                <img src="${p.src}" alt="${p.alt}" loading="lazy">
-                                <button class="galerie-download-btn" data-src="${p.src}" data-title="${p.caption}">
-                                    <i class="fas fa-download"></i> Télécharger
-                                </button>
-                            </div>
+                            <img src="${p.src}" alt="${p.alt}" loading="lazy" onerror="this.src='https://via.placeholder.com/200/2c3e50/ffffff?text=Image'">
+                            <button class="galerie-download-btn" data-src="${p.src}" data-title="${p.caption}">
+                                <i class="fas fa-download"></i> Télécharger
+                            </button>
                             <div class="galerie-caption">${p.caption}</div>
                         </div>
                     `).join('')}
@@ -1015,111 +947,51 @@ function initHeroGallery() {
     `;
     document.body.appendChild(modal);
 
-    const lightbox = document.createElement('div');
-    lightbox.id = 'galerie-lightbox';
-    lightbox.innerHTML = `<button class="lb-close">&times;</button><img src="" alt=""><p class="lb-caption"></p>`;
-    document.body.appendChild(lightbox);
+    // Fonction de téléchargement
+    const telechargerImage = (src, titre) => {
+        fetch(src)
+            .then(response => {
+                if (!response.ok) throw new Error('Image non trouvée');
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `awa-faye-${titre.replace(/\s+/g, '-').toLowerCase()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                showToast(`📸 "${titre}" téléchargé !`, '#27ae60');
+            })
+            .catch(() => {
+                window.open(src, '_blank');
+                showToast(`📸 Image ouverte dans un nouvel onglet`, '#e67e22');
+            });
+    };
 
+    // Ajouter les événements de téléchargement
     modal.querySelectorAll('.galerie-download-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            telechargerImage(btn.getAttribute('data-src'), btn.getAttribute('data-title'));
+            const src = btn.getAttribute('data-src');
+            const title = btn.getAttribute('data-title');
+            telechargerImage(src, title);
         });
     });
 
-    modal.querySelectorAll('.galerie-item').forEach((item, idx) => {
-        item.addEventListener('click', (e) => {
-            if (e.target.closest('.galerie-download-btn')) return;
-            const p = galeriePhotos[idx];
-            lightbox.querySelector('img').src = p.src;
-            lightbox.querySelector('img').alt = p.alt;
-            lightbox.querySelector('.lb-caption').textContent = p.caption;
-            lightbox.classList.add('show');
-        });
-    });
-
-    lightbox.querySelector('.lb-close').addEventListener('click', () => lightbox.classList.remove('show'));
-    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('show'); });
     modal.querySelector('.galerie-modal-close').addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { lightbox.classList.remove('show'); modal.classList.remove('show'); }
-    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('show'); });
 
     btn.addEventListener('click', () => modal.classList.add('show'));
-}
-
-// ===== TÉLÉCHARGER IMAGE =====
-function telechargerImage(src, titre) {
-    fetch(src)
-        .then(response => {
-            if (!response.ok) throw new Error('Image non trouvée');
-            return response.blob();
-        })
-        .then(blob => {
-            const url  = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href  = url;
-            link.download = `awa-faye-${titre.replace(/\s+/g, '-').toLowerCase()}.jpg`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-            showToast(`📸 "${titre}" téléchargé !`, '#27ae60');
-        })
-        .catch(() => {
-            window.open(src, '_blank');
-            showToast(`📸 Image ouverte dans un nouvel onglet`, '#e67e22');
-        });
-}
-
-function showToast(message, color = 'var(--clr-accent)') {
-    const notif = document.createElement('div');
-    notif.textContent = message;
-    notif.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:${color};color:white;padding:10px 20px;border-radius:40px;z-index:10002;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 2500);
-}
-
-// ===== ANIMATION VAGUE =====
-function animateGreetingWave() {
-    // Géré en CSS via @keyframes wave
-}
-
-// ===== PARALLAXE SOURIS (désactivé sur mobile) =====
-function initMouseParallax() {
-    if (window.innerWidth <= 768) return;
-
-    const hero   = document.querySelector('.hero-section');
-    const avatar = document.querySelector('.hero-avatar');
-    if (!hero || !avatar) return;
-
-    let ticking = false;
-    hero.addEventListener('mousemove', (e) => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-            const rect = hero.getBoundingClientRect();
-            const x    = (e.clientX - rect.left - rect.width  / 2) / rect.width;
-            const y    = (e.clientY - rect.top  - rect.height / 2) / rect.height;
-            avatar.style.transform = `translateY(-30px) rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
-            ticking = false;
-        });
-    });
-    hero.addEventListener('mouseleave', () => {
-        avatar.style.transition = 'transform 0.6s ease';
-        avatar.style.transform  = 'translateY(-30px)';
-    });
 }
 
 // ===== PARTICULES (CANVAS) =====
 function initParticleBackground() {
     const hero = document.querySelector('.hero-section');
-    if (!hero) return;
-
-    // Réduire le nombre de particules sur mobile
-    const isMobile = window.innerWidth <= 768;
-    const COUNT    = isMobile ? 30 : 80;
+    if (!hero || isMobile()) return;
 
     const canvas = document.createElement('canvas');
     canvas.id = 'particles-canvas';
@@ -1129,41 +1001,37 @@ function initParticleBackground() {
 
     const ctx = canvas.getContext('2d');
     let W, H, particles, animId;
+    const COUNT = 50;
 
     function resize() { W = canvas.width = hero.offsetWidth; H = canvas.height = hero.offsetHeight; }
 
     function newParticle(fromTop) {
         return {
-            x:           Math.random() * (W || 800),
-            y:           fromTop ? -10 : Math.random() * (H || 600),
-            size:        Math.random() * 3 + 1,
-            speedY:      Math.random() * 0.8 + 0.3,
-            speedX:      (Math.random() - 0.5) * 0.4,
-            opacity:     Math.random() * 0.45 + 0.08,
-            opacityDir:  (Math.random() - 0.5) * 0.004,
-            wobble:      Math.random() * Math.PI * 2,
-            wobbleSpeed: Math.random() * 0.02 + 0.005,
+            x: Math.random() * (W || 800),
+            y: fromTop ? -10 : Math.random() * (H || 600),
+            size: Math.random() * 2 + 1,
+            speedY: Math.random() * 0.5 + 0.2,
+            speedX: (Math.random() - 0.5) * 0.3,
+            opacity: Math.random() * 0.4 + 0.1,
         };
     }
 
     function getColor(op) {
         const dark = document.body.getAttribute('data-theme') === 'dark';
         const pool = dark
-            ? [`rgba(168,199,250,${op})`,`rgba(255,255,255,${op})`,`rgba(125,168,247,${op})`]
-            : [`rgba(44,62,80,${op})`,`rgba(90,110,130,${op})`,`rgba(52,84,110,${op})`];
+            ? [`rgba(168,199,250,${op})`, `rgba(255,255,255,${op})`]
+            : [`rgba(44,62,80,${op})`, `rgba(90,110,130,${op})`];
         return pool[Math.floor(Math.random() * pool.length)];
     }
 
     function init() { particles = Array.from({ length: COUNT }, () => newParticle(false)); }
 
     function animate() {
+        if (!ctx) return;
         ctx.clearRect(0, 0, W, H);
         particles.forEach((p, i) => {
-            p.wobble  += p.wobbleSpeed;
-            p.x       += p.speedX + Math.sin(p.wobble) * 0.3;
-            p.y       += p.speedY;
-            p.opacity += p.opacityDir;
-            if (p.opacity > 0.55 || p.opacity < 0.05) p.opacityDir *= -1;
+            p.x += p.speedX;
+            p.y += p.speedY;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = getColor(p.opacity);
@@ -1184,9 +1052,29 @@ function initParticleBackground() {
     resize(); init(); animate();
 }
 
+// ===== PARALLAXE SOURIS =====
+function initMouseParallax() {
+    if (isMobile()) return;
+
+    const hero = document.querySelector('.hero-section');
+    const avatar = document.querySelector('.hero-avatar');
+    if (!hero || !avatar) return;
+
+    hero.addEventListener('mousemove', (e) => {
+        const rect = hero.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+        const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+        avatar.style.transform = `translateY(-30px) rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
+    });
+    hero.addEventListener('mouseleave', () => {
+        avatar.style.transition = 'transform 0.6s ease';
+        avatar.style.transform = 'translateY(-30px)';
+    });
+}
+
 // ===== GLOW SUR LES CARTES =====
 function initGlowEffect() {
-    if (window.innerWidth <= 768) return;
+    if (isMobile()) return;
     document.querySelectorAll('.projet-carte,.skill-category,.colonne').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const r = card.getBoundingClientRect();
@@ -1199,13 +1087,13 @@ function initGlowEffect() {
 // ===== ÉLÉMENTS FLOTTANTS =====
 function initFloatingElements() {
     document.querySelectorAll('.langue').forEach((el, i) => {
-        el.style.animationDelay = `${i * 0.2}s`;
+        el.style.animation = `float ${3 + i * 0.5}s ease-in-out infinite`;
     });
 
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity   = '1';
+                entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateX(0)';
                 obs.unobserve(entry.target);
             }
@@ -1213,9 +1101,29 @@ function initFloatingElements() {
     }, { threshold: 0.2 });
 
     document.querySelectorAll('.timeline-item').forEach((item, i) => {
-        item.style.opacity    = '0';
-        item.style.transform  = 'translateX(-20px)';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
         item.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
         obs.observe(item);
     });
+}
+
+// ===== TOAST NOTIFICATION =====
+function showToast(message, color = '#2c3e50') {
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+        background:${color}; color:white; padding:10px 20px;
+        border-radius:40px; z-index:10002; font-size:14px;
+        font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.2);
+        white-space:nowrap; max-width:90%; white-space:normal;
+        text-align:center; font-family:var(--font-body);
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
 }
