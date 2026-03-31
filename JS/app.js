@@ -108,6 +108,8 @@ const isTablet = () => window.innerWidth > 768 && window.innerWidth <= 1024;
 
 // ===== INITIALISATION =====
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("🚀 Démarrage du portfolio...");
+    
     initTheme();
     initHamburger();
     initScrollSpy();
@@ -234,10 +236,14 @@ function initScrollSpy() {
     }, { passive: true });
 }
 
-// ===== RENDU PROJETS =====
+// ===== RENDU PROJETS (CORRIGÉ) =====
 function renderProjets(filtre = 'tous') {
     const container = document.getElementById('projets-container');
-    if (!container) return;
+    
+    if (!container) {
+        console.error('❌ Élément #projets-container introuvable dans le HTML !');
+        return;
+    }
 
     const liste = filtre === 'tous' ? PROJETS : PROJETS.filter(p => p.categorie === filtre);
     container.innerHTML = '';
@@ -290,28 +296,6 @@ function renderProjets(filtre = 'tous') {
             const id = parseInt(btn.dataset.id);
             const projet = PROJETS.find(p => p.id === id);
             if (projet) ouvrirProjetModal(projet);
-        });
-    });
-}
-// ===== MODAL DÉTAIL PROJET - AJOUTER ICI !!! =====
-function ouvrirProjetModal(projet) {
-    // Affiche un message avec les infos du projet
-    alert(`📁 Projet: ${projet.titre}\n\n📝 Description: ${projet.description}\n\n🛠️ Outils: ${projet.tags.join(", ")}`);
-    
-    // Ouvre le PDF directement
-    if (projet.lien && projet.lien !== '#') {
-        window.open(projet.lien, '_blank');
-    }
-}
-
-// ===== FILTRES PROJETS =====
-function initFiltres() {
-    const btns = document.querySelectorAll('.filtre-btn');
-    btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderProjets(btn.dataset.filtre);
         });
     });
 }
@@ -425,10 +409,27 @@ function ouvrirProjetModal(projet) {
     modal.classList.add('show');
 }
 
-// ===== RENDU COMPÉTENCES =====
+// ===== FILTRES PROJETS =====
+function initFiltres() {
+    const btns = document.querySelectorAll('.filtre-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProjets(btn.dataset.filtre);
+        });
+    });
+}
+
+// ===== RENDU COMPÉTENCES (CORRIGÉ) =====
 function renderCompetences() {
     const wrapper = document.getElementById('skills-wrapper');
-    if (!wrapper) return;
+    
+    if (!wrapper) {
+        console.error('❌ Élément #skills-wrapper introuvable dans le HTML !');
+        return;
+    }
+    
     wrapper.innerHTML = '';
 
     competences.forEach((cat, ci) => {
@@ -630,13 +631,13 @@ function initDownloadCV() {
     });
 }
 
-// ===== QR CODE =====
+// ===== QR CODE (CORRIGÉ) =====
 function initQRCode() {
     const qrBtn = document.getElementById('qrBtn');
     if (!qrBtn) return;
 
     const portfolioUrl = window.location.href;
-    const qrApiUrl = `https://quickchart.io/qr?text=${encodeURIComponent(portfolioUrl)}&size=200&margin=2`;
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(portfolioUrl)}`;
 
     const style = document.createElement('style');
     style.textContent = `
@@ -724,15 +725,13 @@ function initShareButton() {
     }
 }
 
-// ===== VUE RESPONSIVE (DESKTOP/TABLETTE/MOBILE) =====
-// ===== VUE RESPONSIVE (DESKTOP/TABLETTE/MOBILE) - CORRIGÉE =====
+// ===== VUE RESPONSIVE =====
 function initViewToggle() {
     const btns = document.querySelectorAll('.view-toggle-btn');
     const container = document.querySelector('.view-toggle-container');
     
     if (!btns.length) return;
     
-    // S'assurer que le conteneur est visible sur desktop
     if (container && !isMobile()) {
         container.style.display = 'flex';
     }
@@ -744,16 +743,13 @@ function initViewToggle() {
             
             const view = btn.getAttribute('data-view');
             
-            // Retirer la classe active de tous les boutons
             btns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Réinitialiser les styles du body
             document.body.style.maxWidth = '';
             document.body.style.margin = '';
             document.body.style.backgroundColor = '';
             
-            // Appliquer la vue
             if (view === 'desktop') {
                 document.body.classList.add('view-desktop');
                 showToast('🖥️ Vue Desktop activée', '#2c3e50');
@@ -771,10 +767,10 @@ function initViewToggle() {
         });
     });
     
-    // Bouton actif par défaut
     const defaultBtn = document.querySelector('.view-toggle-btn[data-view="desktop"]');
     if (defaultBtn) defaultBtn.classList.add('active');
 }
+
 // ===== TYPING ANIMATION =====
 function initTypingAnimation() {
     const el = document.getElementById('typing-title');
@@ -842,9 +838,11 @@ function initSmoothScroll() {
     });
 }
 
-// ===== CURSEUR PERSONNALISÉ =====
+// ===== CURSEUR PERSONNALISÉ (CORRIGÉ) =====
 function initCustomCursor() {
-    if (isMobile() || ('ontouchstart' in window)) {
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    
+    if (isTouchDevice || window.innerWidth <= 768) {
         const cursor = document.querySelector('.custom-cursor');
         if (cursor) cursor.remove();
         return;
@@ -857,14 +855,58 @@ function initCustomCursor() {
         document.body.appendChild(cursor);
     }
 
+    if (!document.getElementById('cursor-style')) {
+        const style = document.createElement('style');
+        style.id = 'cursor-style';
+        style.textContent = `
+            .custom-cursor {
+                position: fixed;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: rgba(46, 204, 113, 0.4);
+                border: 2px solid var(--clr-accent, #27ae60);
+                pointer-events: none;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s, height 0.2s, background 0.2s;
+            }
+            .custom-cursor.hover {
+                width: 40px;
+                height: 40px;
+                background: rgba(46, 204, 113, 0.2);
+                border-width: 2px;
+            }
+            body {
+                cursor: default;
+            }
+            a, button, .filtre-btn, .social-icon, .projet-carte, .skill-item, .carte-lien, .view-toggle-btn {
+                cursor: pointer;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
+        if (cursor) {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        }
     });
 
-    const sel = 'a,button,.filtre-btn,.social-icon,.projet-carte,.skill-item,.carte-lien,.view-toggle-btn';
-    document.addEventListener('mouseover', (e) => { if (e.target.closest(sel)) cursor.classList.add('hover'); });
-    document.addEventListener('mouseout', (e) => { if (e.target.closest(sel)) cursor.classList.remove('hover'); });
+    const interactiveElements = 'a, button, .filtre-btn, .social-icon, .projet-carte, .skill-item, .carte-lien, .view-toggle-btn';
+    
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(interactiveElements) && cursor) {
+            cursor.classList.add('hover');
+        }
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(interactiveElements) && cursor) {
+            cursor.classList.remove('hover');
+        }
+    });
 }
 
 // ===== RÉSEAUX SOCIAUX =====
@@ -888,7 +930,7 @@ function initSocialLinks() {
     });
 }
 
-// ===== GALERIE HERO (AVEC TÉLÉCHARGEMENT) =====
+// ===== GALERIE HERO =====
 function initHeroGallery() {
     const btn = document.getElementById('open-galerie-hero');
     if (!btn) return;
@@ -957,7 +999,6 @@ function initHeroGallery() {
     `;
     document.body.appendChild(modal);
 
-    // Fonction de téléchargement
     const telechargerImage = (src, titre) => {
         fetch(src)
             .then(response => {
@@ -981,7 +1022,6 @@ function initHeroGallery() {
             });
     };
 
-    // Ajouter les événements de téléchargement
     modal.querySelectorAll('.galerie-download-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();

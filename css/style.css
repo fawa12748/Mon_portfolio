@@ -197,8 +197,8 @@ body {
 /* ===== CURSEUR PERSONNALISÉ ===== */
 .custom-cursor {
     position: fixed;
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     border: 2px solid #3498db;
     border-radius: 50%;
     pointer-events: none;
@@ -1118,6 +1118,7 @@ body {
     background: rgba(44, 62, 80, 0.2);
 }
 
+/* ==========  PROJETS ==========  */
 /* ===== FILTRES PROJETS ===== */
 .projets-filtres {
     display: flex;
@@ -1147,11 +1148,11 @@ body {
 /* ===== GRID PROJETS ===== */
 .projets-cartes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
     gap: 3rem;
 }
 
-/* ===== CARTE PROJET - ORDRE CORRECT ===== */
+/* ===== CARTE PROJET - HAUTEUR AUGMENTÉE ===== */
 .projet-carte {
     background: var(--clr-surface);
     border-radius: 20px;
@@ -1162,15 +1163,21 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 580px; /* AJOUTÉ : Hauteur minimale augmentée */
 }
 
-/* Image en premier */
+/* Image en premier - HAUTEUR AUGMENTÉE */
 .carte-img {
-    height: 220px;
+    height: 300px; /* MODIFIÉ : de 220px à 300px */
     width: 100%;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
+}
+
+.projet-carte .carte-img {
+    height: 300px; /* MODIFIÉ : de 300px à 260px */
+    overflow: hidden;
 }
 
 .carte-img-real {
@@ -1184,31 +1191,152 @@ body {
     transform: scale(1.05);
 }
 
-/* Corps de la carte - contient tout le texte */
+/* Corps de la carte - ESPACEMENT AUGMENTÉ */
 .carte-body {
-    padding: 1.5rem;
+    padding: 1.8rem; /* MODIFIÉ : de 1.5rem à 1.8rem */
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
-/* Titre en premier dans le body */
+/* Titre - TAILLE ET ESPACE AUGMENTÉS */
 .carte-titre {
-    font-size: 1.3rem;
-    margin-bottom: 0.8rem;
+    font-size: 1.4rem; /* MODIFIÉ : de 1.3rem à 1.4rem */
+    margin-bottom: 1rem; /* MODIFIÉ : de 0.8rem à 1rem */
     font-family: var(--font-display);
     color: var(--clr-text);
     font-weight: 700;
 }
 
-/* Description ensuite */
+/* Description - ESPACEMENT AUGMENTÉ */
 .carte-desc {
     color: var(--clr-text-muted);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.95rem; /* MODIFIÉ : de 0.9rem à 0.95rem */
+    line-height: 1.7; /* MODIFIÉ : de 1.6 à 1.7 */
+    margin-bottom: 1.5rem; /* MODIFIÉ : de 1rem à 1.5rem */
+    flex: 1; /* AJOUTÉ : Permet à la description de prendre l'espace disponible */
+}
+
+/* Zone des tags - ESPACEMENT AUGMENTÉ */
+.carte-tags-wrapper {
+    margin-top: auto;
     margin-bottom: 1rem;
 }
 
+.carte-tags-title {
+    font-size: 0.9rem !important; /* MODIFIÉ : de 0.85rem à 0.9rem */
+    margin-bottom: 0.8rem !important; /* MODIFIÉ : de 0.5rem à 0.8rem */
+}
+
+.carte-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem; /* MODIFIÉ : de 0.5rem à 0.7rem */
+    margin-bottom: 0.5rem;
+}
+
+.carte-tag {
+    padding: 0.4rem 1rem; /* MODIFIÉ : de 0.25rem 0.75rem à 0.4rem 1rem */
+    background: rgba(46, 204, 113, 0.1);
+    border-radius: 25px;
+    font-size: 0.85rem; /* MODIFIÉ : de 0.75rem à 0.85rem */
+    font-weight: 500;
+    color: var(--clr-accent);
+}
+
+/* Bouton - TAILLE AUGMENTÉE */
+.carte-lien {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.5rem; /* MODIFIÉ : de 0.7rem 1.2rem à 0.9rem 1.5rem */
+    background: var(--clr-accent);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-size: 1rem; /* MODIFIÉ : de 0.9rem à 1rem */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.carte-lien:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.05);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .projets-cartes {
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 2rem;
+    }
+    
+    .projet-carte {
+        min-height: 540px;
+    }
+    
+    .carte-img {
+        height: 240px;
+    }
+    
+    .projet-carte .carte-img {
+        height: 240px;
+    }
+    
+    .carte-body {
+        padding: 1.5rem;
+    }
+    
+    .carte-titre {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .projets-cartes {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+    }
+    
+    .projet-carte {
+        min-height: auto;
+    }
+    
+    .carte-img {
+        height: 220px;
+    }
+    
+    .projet-carte .carte-img {
+        height: 220px;
+    }
+    
+    .carte-body {
+        padding: 1.3rem;
+    }
+    
+    .carte-titre {
+        font-size: 1.25rem;
+    }
+    
+    .carte-desc {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .carte-tag {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .carte-lien {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
+    }
+}
 /* Tags/Outils ensuite */
 .carte-tags {
     display: flex;
