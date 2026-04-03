@@ -203,14 +203,13 @@ body {
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
-    transform: translate(-50%, -50%);
+    
     background: rgba(52, 152, 219, 0.1);
-    backdrop-filter: blur(2px);
 }
+
 .custom-cursor.hover {
-    width: 45px;
-    height: 45px;
+    width: 75px;
+    height: 75px;
     background: rgba(52, 152, 219, 0.2);
     border-color: #2980b9;
 }
@@ -405,9 +404,8 @@ body {
     transform: translateX(85px);
 }
 
-/* ===== BOUTON QR CODE ===== */
+/* ===== BOUTON QR CODE - VERSION CORRIGÉE ===== */
 .qr-trigger {
-    position: relative;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -415,68 +413,25 @@ body {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 40px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-size: 1rem;
     font-weight: 500;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.qr-trigger i { font-size: 1.1rem; color: white; }
+
+.qr-trigger i {
+    font-size: 1.1rem;
+    color: white;
+}
+
 .qr-trigger:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
 }
-.qr-popover {
-    position: absolute;
-    top: calc(100% + 15px);
-    right: 0;
-    background: var(--clr-surface);
-    border-radius: 20px;
-    padding: 1rem;
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    z-index: 1000;
-    min-width: 160px;
-    text-align: center;
-    border: 1px solid var(--clr-border);
-    pointer-events: none;
-}
-.qr-trigger:hover .qr-popover {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-.qr-popover::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    right: 20px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--clr-surface);
-}
-.qr-popover img {
-    width: 200px;
-    height: 200px;
-    border-radius: 12px;
-    background: white;
-    padding: 8px;
-    margin-bottom: 0.75rem;
-    box-shadow: var(--shadow-sm);
-}
-.qr-popover span {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--clr-text-muted);
-    font-weight: 500;
-    line-height: 1.4;
-}
+
+/* Supprimez complètement les styles .qr-popover et .qr-popover::before */
+/* Ne gardez que les styles ci-dessus */
 
 /* ===== BOUTON THÈME ===== */
 .theme-btn {
