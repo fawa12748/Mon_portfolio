@@ -203,7 +203,6 @@ body {
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
-    
     background: rgba(52, 152, 219, 0.1);
 }
 

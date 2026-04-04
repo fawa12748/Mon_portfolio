@@ -630,110 +630,84 @@ function initDownloadCV() {
         showToast('📄 Téléchargement du CV...', '#2c3e50');
     });
 }
-
-// ===== QR CODE - VERSION AVEC DÉBOGAGE =====
+// ===== QR CODE =====
 function initQRCode() {
-    console.log("🔍 initQRCode() appelée");
-    
     const qrBtn = document.getElementById('qrBtn');
-    console.log("🔍 Bouton QR trouvé ?", qrBtn);
-    
-    if (!qrBtn) {
-        console.error("❌ Bouton QR non trouvé ! Vérifiez l'id='qrBtn'");
-        return;
-    }
+    if (!qrBtn) return;
 
     const portfolioUrl = 'https://fawa12748.github.io/Mon_portfolio/';
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(portfolioUrl)}`;
-    
-    console.log("🔍 URL du QR:", qrApiUrl);
 
-    // Supprimer l'ancien modal s'il existe
     const existingModal = document.getElementById('qr-modal-full');
-    if (existingModal) {
-        console.log("🔍 Suppression de l'ancien modal");
-        existingModal.remove();
-    }
+    if (existingModal) existingModal.remove();
 
-    // Créer le modal
-    console.log("🔍 Création du modal...");
     const modal = document.createElement('div');
     modal.id = 'qr-modal-full';
     modal.style.cssText = `
         display: none;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         background: rgba(0,0,0,0.95);
         z-index: 100000;
         justify-content: center;
         align-items: center;
     `;
-    
+
     modal.innerHTML = `
         <div style="
             background: white;
             border-radius: 20px;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
             max-width: 350px;
             width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         ">
-            <img src="${qrApiUrl}" 
-                 alt="QR Code" 
-                 style="width: 250px; height: 250px; margin-bottom: 15px;">
-            <p style="color: #333; margin: 10px 0; font-size: 16px;">
-                <i class="fas fa-qrcode"></i> Scannez pour visiter
-            </p>
-            <p style="color: #666; font-size: 11px; word-break: break-all; margin: 5px 0;">
+            <h3 style="color:#333; margin-bottom:15px;">📱 Scanner mon portfolio</h3>
+            <div id="qrcode-container" style="display:flex; justify-content:center; margin-bottom:15px;"></div>
+            <p style="color:#666; font-size:12px; margin:5px 0; word-break:break-all;">
                 ${portfolioUrl}
             </p>
             <button id="closeQrModalBtn" style="
-                margin-top: 15px;
-                padding: 8px 25px;
+                margin-top: 20px;
+                padding: 10px 30px;
                 background: #27ae60;
                 color: white;
                 border: none;
                 border-radius: 25px;
                 cursor: pointer;
                 font-size: 14px;
-            ">Fermer</button>
+                font-weight: bold;
+            ">✕ Fermer</button>
         </div>
     `;
-    
-    document.body.appendChild(modal);
-    console.log("✅ Modal créé et ajouté au body");
 
-    // Fermeture
-    const closeBtn = document.getElementById('closeQrModalBtn');
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            console.log("🔍 Fermeture du modal");
-            modal.style.display = 'none';
-        };
-    }
-    
-    modal.onclick = (e) => {
-        if (e.target === modal) {
-            console.log("🔍 Fermeture par clic sur le fond");
-            modal.style.display = 'none';
-        }
+    document.body.appendChild(modal);
+
+    document.getElementById('closeQrModalBtn').onclick = () => {
+        modal.style.display = 'none';
     };
 
-    // Écouteur d'événement pour le bouton QR
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+
     qrBtn.onclick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("🎯 CLIC SUR LE BOUTON QR !");
-        console.log("🔍 Affichage du modal...");
         modal.style.display = 'flex';
-        console.log("🔍 modal.style.display =", modal.style.display);
+
+        const container = document.getElementById('qrcode-container');
+        container.innerHTML = '';
+
+        new QRCode(container, {
+            text: portfolioUrl,
+            width: 250,
+            height: 250,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
     };
-    
-    console.log("✅ QR Code initialisé avec succès !");
 }
 // ===== BOUTON PARTAGE =====
 function initShareButton() {
